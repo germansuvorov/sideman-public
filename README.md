@@ -4,7 +4,7 @@
 
 ## The problem I wanted to solve
 
-Practising bass alone means playing to a click, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, on a Jetson AGX Orin, with every session logged by sample index so that any musical question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions.
+Practising bass alone means playing to a click, a fixed backing track, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, on a Jetson AGX Orin, with every session logged by sample index so that any musical question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions.
 
 ## Demonstration
 
