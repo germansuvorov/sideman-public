@@ -18,7 +18,7 @@
 
 <section>
 <h2>The problem I wanted to solve</h2>
-<p>Practising bass alone means playing to a click, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, with every session logged by sample index so that any question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions.</p>
+<p>Practising bass alone means playing to a click, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, with every session logged by sample index so that any question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions. Harmony was in the original plan — a partner that follows chords as well as pulse — and I cut it to drums only for this stage: the drummer has to be right before anything is built on top of it.</p>
 </section>
 
 <section>
@@ -86,6 +86,7 @@
     <tr><td class="exp"></td><td>The fill gate is calibrated for offers: on my own audio, 46 of 52 phrase ends were vetoed as "faltering".</td></tr>
     <tr><td class="exp"></td><td>The control thread runs at 109 % of a block at p99 in Python; the plan is C++ for the two real-time tiers. Where the hits land in the air has not been measured (needs the loopback cable).</td></tr>
     <tr><td class="exp"></td><td>Funk and soul in 4/4 only; the phrase is counted from the count-in, not heard.</td></tr>
+    <tr><td class="exp"></td><td>Harmony: the listener&#39;s key and chord guesses feed the panel only; harmonic accompaniment is deferred until the drummer is right.</td></tr>
   </tbody>
 </table>
 </div>

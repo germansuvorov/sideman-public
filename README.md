@@ -4,7 +4,7 @@
 
 ## The problem I wanted to solve
 
-Practising bass alone means playing to a click, a fixed backing track, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, on a Jetson AGX Orin, with every session logged by sample index so that any musical question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions.
+Practising bass alone means playing to a click, a fixed backing track, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, on a Jetson AGX Orin, with every session logged by sample index so that any musical question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions. Harmony was in the original plan — a partner that follows chords as well as pulse — and I cut it to drums only for this stage: the drummer has to be right before anything is built on top of it.
 
 ## Demonstration
 
@@ -60,6 +60,7 @@ The engineering process is the part I claim most: constants have one home (the s
 | Deterministic replay with md5 parity; acceptance runner per brief | Control thread at 109 % of a block at p99 in Python; the plan is C++ for the two real-time tiers |
 | Round-trip latency measured by loopback: 26.08 ms, identical at 128 and 256 frames | Where the hits land in the air has not been measured (needs the loopback cable patched) |
 | Panel: notes, key, chords, input meter, reasons in words | Funk and soul in 4/4 only; the phrase is counted from the count-in, not heard |
+|  | Harmony: the listener's key and chord guesses feed the panel only; harmonic accompaniment is deferred until the drummer is right |
 
 ## Representative code
 
