@@ -1,0 +1,59 @@
+/* layout: one reading column for prose, a wider measure for figures, tables and code */
+:root {
+  --bg: #f5f8f8; --surface: #ffffff; --ink: #15262a; --muted: #566a6e; --line: #d5dfe0;
+  --accent: #0f6e7a; --accent-ink: #ffffff; --code-bg: #eef3f3; --callout: #b5541c;
+  --display: "IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --body: "IBM Plex Sans", "Helvetica Neue", Arial, sans-serif;
+  --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1617; --surface: #16201f; --ink: #e6eeee; --muted: #9fb1b3; --line: #2a3838;
+    --accent: #5fc4cf; --accent-ink: #0b1414; --code-bg: #121c1c; --callout: #e8884a;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1617; --surface: #16201f; --ink: #e6eeee; --muted: #9fb1b3; --line: #2a3838;
+  --accent: #5fc4cf; --accent-ink: #0b1414; --code-bg: #121c1c; --callout: #e8884a;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 17px; line-height: 1.55; padding: 0 16px 64px; }
+main { max-width: 1040px; margin: 0 auto; }
+header.page { padding: 40px 0 8px; border-bottom: 1px solid var(--line); margin-bottom: 8px; }
+header.page .eyebrow { font-family: var(--mono); font-size: 13px; color: var(--muted); letter-spacing: 0.04em; margin: 0 0 10px; }
+h1 { font-family: var(--display); font-weight: 600; font-size: clamp(30px, 4.5vw, 44px); line-height: 1.12; margin: 0 0 12px; text-wrap: balance; max-width: 22ch; }
+header.page p.lede { font-size: 19px; color: var(--muted); margin: 0 0 16px; max-width: 62ch; }
+h2 { font-family: var(--display); font-weight: 600; font-size: 26px; margin: 44px 0 12px; text-wrap: balance; }
+h3 { font-size: 17px; font-weight: 600; margin: 24px 0 8px; }
+p, li { max-width: 68ch; }
+section > p { margin: 0 0 14px; }
+figure { margin: 18px 0 24px; }
+figure img { max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 6px; display: block; }
+figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
+ol.callouts { counter-reset: c; list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 6px; }
+ol.callouts li { counter-increment: c; position: relative; padding-left: 36px; max-width: 80ch; }
+ol.callouts li::before { content: counter(c); position: absolute; left: 0; top: 2px; width: 24px; height: 24px; border-radius: 50%;
+  background: var(--callout); color: #fff; font-family: var(--mono); font-size: 13px; font-weight: 700; display: grid; place-items: center; }
+pre { background: var(--code-bg); border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 13.5px; line-height: 1.5; }
+code { font-family: var(--mono); font-size: 0.92em; }
+p code, li code, td code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; }
+pre.arch { font-size: 13px; }
+.note { border-left: 3px solid var(--accent); padding: 8px 14px; color: var(--muted); font-size: 15px; margin: 16px 0; max-width: 80ch; }
+table { border-collapse: collapse; width: 100%; margin: 12px 0 8px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 12.5px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--muted); }
+td.ok::before { content: "works"; } td.exp::before { content: "open"; }
+td.ok::before, td.exp::before { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 7px; border-radius: 10px; margin-right: 8px; }
+td.ok::before { background: var(--accent); color: var(--accent-ink); }
+td.exp::before { background: var(--callout); color: #fff; }
+.tablewrap { overflow-x: auto; }
+audio { width: 100%; max-width: 560px; display: block; margin: 6px 0 4px; }
+ul.clips { list-style: none; padding: 0; display: grid; gap: 14px; }
+footer { margin-top: 56px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+a { color: var(--accent); }
+a:focus-visible, audio:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 420px) { body { font-size: 16px; } h2 { font-size: 23px; } }

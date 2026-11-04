@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>sideman drum partner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+<header class="page">
+  <p class="eyebrow">Project summary · 2026-11-01 · working repository kept private</p>
+  <h1>sideman: a drummer that plays with my bass</h1>
+  <p class="lede">A real-time drum accompanist on a Jetson AGX Orin: bass DI in, drums out, every session replayable bit for bit so that musical questions get numerical answers.</p>
+</header>
+
+<section>
+<h2>The problem I wanted to solve</h2>
+<p>Practising bass alone means playing to a click, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, with every session logged by sample index so that any question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions.</p>
+</section>
+
+<section>
+<h2>Demonstration</h2>
+<p>The panel, captured while a take of mine (recorded 2026-11-01) was fed back through the live audio path.</p>
+<figure>
+  <img src="assets/sideman-panel-live.png" alt="The sideman panel: a four-bar yardstick with bass notes drawn on pitch rows, a drum lane, tempo 104, status grooving, input meter and transport">
+  <figcaption>Bar 1 of 4 at 104 BPM, full kit, my G1/G2 line with a D2 and two A♭2 passing notes.</figcaption>
+</figure>
+<ol class="callouts">
+  <li>Key and chords guessed by the listener from my audio alone (here G), labelled as a guess.</li>
+  <li>My notes, named by pitch, drawn where they actually sit between the 16th-note ticks, with an attack head and an envelope body that fades with the note.</li>
+  <li>What the drummer played, one lane under the bars.</li>
+  <li>Tempo and the state in words: grooving, bar 1 of 4, full kit, and a falter hold with the measured scatter and its threshold, so the reason for every decision is on the screen.</li>
+  <li>Input meter with the target band, so a bad gain is visible before a bad take.</li>
+  <li>Transport, the marker key, and the hand brake (<code>[</code> <code>]</code> <code>\</code>) that nudges the home tempo.</li>
+</ol>
+
+<h3>Two short clips from a closed-loop duet</h3>
+<p>A model bassist plays against the drummer at 96 BPM; bass at unity, drums at −6 dB.</p>
+<ul class="clips">
+  <li><strong>First fill and crash</strong> (12 s): the fill in the last bar of a phrase, then the crash on the downbeat.
+    <audio controls preload="none" src="assets/sideman-first-fill-and-crash.wav"></audio></li>
+  <li><strong>The ending</strong> (11 s): stop pressed; the drummer finishes the phrase with a fill, lands crash and kick on the one, and lets it ring.
+    <audio controls preload="none" src="assets/sideman-ending.wav"></audio></li>
+</ul>
+
+<figure>
+  <img src="assets/sideman-duet-tempo.png" alt="Tempo in BPM over three minutes around a home tempo of 96, with fill, veto, crash and ending markers">
+  <figcaption>The tempo trace of that duet, which is how every change gets judged: the pair stays within about ±1 % of home, fills land every fourth bar unless a stumble vetoes them, and the ending lands on a downbeat.</figcaption>
+</figure>
+</section>
+
+<section>
+<h2>Architecture and my contribution</h2>
+<pre class="arch">bass DI → USB interface (48 kHz) → T0 audio callback (256 frames)
+   → T1 control thread: onset front end → co-leading Kalman PLL (tempo, phase)
+        → home-tempo spring + push absorber → falter / adapt detectors
+        → controller: one bar ahead from a library of human grooves (GMD), fills, crash, ending
+        → sampler → T0 output, every hit scheduled at t_grid + feel − output_latency
+   → T2 logger: events.jsonl by sample index, bit-for-bit replayable
+   → panel server: browser front panel (yardstick; listener: key, chords, notes)</pre>
+<p>This project runs as a three-role collaboration that I designed:</p>
+<ul>
+  <li><strong>I</strong> set the goals, make every musical decision by ear (co-leader tempo, when the drummer may comment, how long a phrase is), record the takes, measure the hardware, and merge the agent's branch by hand.</li>
+  <li><strong>Claude in chat</strong> drafted the v0 specification with me and issued the numbered briefs.</li>
+  <li><strong>Claude Code</strong> built the code in its own git worktree, one brief at a time, and returned a report per brief with a judge table, numbers with their denominators, and an explicit list of what was not done.</li>
+</ul>
+<p>The engineering process is the part I claim most: constants have one home (the spec), every rate names its numerator and denominator, an empty evidence set is a failure rather than a pass, and every session replays byte for byte. That turned "does it feel right?" into measurements the agent could act on. Eight briefs produced the onset front end, the Kalman PLL, a 2 400-groove library with 151 fills, a closed-loop duet harness with a model bassist, the live loop, the panel, and 154 tests.</p>
+</section>
+
+<section>
+<h2>What works today, what remains experimental</h2>
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Status</th><th>Detail</th></tr></thead>
+  <tbody>
+    <tr><td class="ok"></td><td>Live loop: count in by playing, the drums lock and follow; 0–2 buffer xruns per 30 minutes at 256 frames.</td></tr>
+    <tr><td class="ok"></td><td>Tracker follows deliberate tempo changes, resists creep, holds the groove through a stumble, rests and re-enters.</td></tr>
+    <tr><td class="ok"></td><td>Fills at phrase ends, crash on the next downbeat, musical ending: 0 misplaced over 1 327 bars of duets.</td></tr>
+    <tr><td class="ok"></td><td>Deterministic replay with md5 parity; an acceptance runner per brief; round-trip latency measured by loopback at 26.08 ms.</td></tr>
+    <tr><td class="ok"></td><td>Panel: notes, key, chords, input meter, and every state in words.</td></tr>
+    <tr><td class="exp"></td><td>I cannot yet hear myself at 0 ms: the interface has no direct monitor, and the 26 ms software monitor makes the pair run away (0 of 9 duets hold). Every live test waits on a mixer or a different interface.</td></tr>
+    <tr><td class="exp"></td><td>Three rulings pending on my ear: re-home after a tempo change (the "never" arm holds 9 of 9 duets), fill rate, and strength weighting.</td></tr>
+    <tr><td class="exp"></td><td>The fill gate is calibrated for offers: on my own audio, 46 of 52 phrase ends were vetoed as "faltering".</td></tr>
+    <tr><td class="exp"></td><td>The control thread runs at 109 % of a block at p99 in Python; the plan is C++ for the two real-time tiers. Where the hits land in the air has not been measured (needs the loopback cable).</td></tr>
+    <tr><td class="exp"></td><td>Funk and soul in 4/4 only; the phrase is counted from the count-in, not heard.</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<section>
+<h2>Representative code</h2>
+<p>The tempo "chase" was the hardest bug: a bassist who anticipates the drums and a drummer who phase-corrects toward the bassist's notes accelerate together. The obvious fix, a stronger spring on the period, was measured and failed at every strength, because the acceleration travels through the phase correction. What holds is what a human drummer does: sit back by the amount the bassist pushes. The two methods below encode the rule I insisted on throughout: the drummer may bias its prediction, but never assigns the clock.</p>
+<pre><code>def _apply_tempo_pull(self, f) -&gt; None:
+    """The spring toward home. Outside ADAPTING, the *prediction* of the period is biased
+    toward T_home by pull_frac_per_bar of the gap, capped per bar, a quarter per beat.
+    Never an assignment to phi or T: the next onsets can overrule it."""
+    h = self.home_cfg
+    if f is None or self.T_home is None or self.adapting or not bool(h.get("enabled", True)):
+        return
+    bpb = self.tracker.metronome.beats_per_bar
+    gap = self.T_home - f.T
+    step = float(h["pull_frac_per_bar"]) / bpb * gap
+    cap = float(h["pull_cap_pct_per_bar"]) / 100.0 / bpb * abs(f.T)
+    f.x[1] = f.T + float(np.clip(step, -cap, cap))
+
+def _absorb_push(self) -&gt; None:
+    """Sit back against a pushing bassist. The persistent part of the innovation (its mean
+    over each beat's onsets, integrated slowly) lays the drums back from his pulse.
+    Scheduling only: the tracker still follows his notes. Frozen while ADAPTING, because
+    a sustained sign there is intent, not push."""
+    nu, self._beat_nu = self._beat_nu, []
+    h = self.home_cfg
+    if h is None or not bool(h.get("push_enabled", False)) or self.adapting or not nu:
+        return
+    g = float(h.get("push_gain_per_beat", 0.05))
+    lim = ms_to_samples(float(h.get("push_max_ms", 60.0)))
+    self.push = float(np.clip(self.push - g * float(np.mean(nu)), -lim, lim))</code></pre>
+<p class="note">Excerpt from the controller, docstrings shortened. Written by Claude Code to my brief; the measurement that chose it over the stronger spring (8 of 9 duets held versus 0 of 9) is in that brief's return.</p>
+</section>
+
+<footer>Summary, captures and clips prepared with Claude Code on 2026-11-01. The repository stays private; the drums in the clips are rendered from human-played grooves in Google's Groove MIDI Dataset (CC-BY 4.0).</footer>
+</main>
+</body>
+</html>
