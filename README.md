@@ -4,7 +4,7 @@
 
 ## The problem I wanted to solve
 
-Practising bass alone means playing to a click, a fixed backing track, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, on a Jetson AGX Orin, with every session logged by sample index so that any musical question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions. Harmony was in the original plan — a partner that follows chords as well as pulse — and I cut it to drums only for this stage: the drummer has to be right before anything is built on top of it.
+Practising bass alone means playing to a click, a fixed backing track, or to nothing. A drummer does something a click cannot: locks onto the pulse, predicts where the next beat will land, commits a hit slightly before it and corrects continuously. I wanted that drummer on my desk, listening to a DI bass through a USB interface and playing a sampled kit, on a Jetson AGX Orin, with every session logged by sample index so that any musical question ("why did it speed up at bar 30?") can be answered offline with numbers rather than opinions. Harmony was in the original plan — a partner that follows chords as well as pulse — and I cut it to drums only for this stage: the drummer has to be right before anything is built on top of it. The end goal is a partner that completes the band in any combination: a bassist and three guitarists with no drummer, or a practice room with one, two or more invisible musicians.
 
 ## Demonstration
 
@@ -22,7 +22,7 @@ The panel, captured while a take of mine (recorded 2026-11-01) was fed back thro
 Two short clips from a closed-loop duet (a model bassist playing against the drummer at 96 BPM; drums at −6 dB):
 
 - [`sideman-first-fill-and-crash.wav`](assets/sideman-first-fill-and-crash.wav): the first fill in the last bar of a phrase, then the crash on the downbeat (12 s).
-- [`sideman-ending.wav`](assets/sideman-ending.wav): stop pressed; the drummer finishes the phrase with a fill, crash and kick on the one, and lets it ring (11 s).
+- [`sideman-ending.wav`](assets/sideman-ending.wav): stop pressed with the fill-and-crash ending enabled; the drummer finishes the phrase with a fill, crash and kick on the one, and lets it ring (11 s). That ending is now opt-in; the default stops plain on the next downbeat.
 
 And the tempo trace of that duet, which is how every change gets judged:
 
@@ -54,13 +54,13 @@ The engineering process is the part I claim most: constants have one home (the s
 
 | Works (measured) | Experimental or open |
 |---|---|
-| Live loop: count in by playing, drums lock and follow; 0–2 buffer xruns per 30 min at 256 frames | I cannot yet hear myself at 0 ms: the interface has no direct monitor, and the 26 ms software monitor makes the pair run away (0 of 9 duets hold). Every live test waits on a mixer or a different interface |
+| Live loop: count in by playing, drums lock and follow; 0–2 buffer xruns per 30 min at 256 frames | Monitoring at 0 ms is now in place: a mixing board routes my signal to the headphones and, separately, to the drummer's input. The nine-duet measurement (0 of 9 held through the 26 ms software monitor) has not yet been re-run through it |
 | Tracker follows deliberate tempo changes, resists creep, holds the groove through a stumble, rests and re-enters | Three rulings pending on my ear: re-home after a tempo change (the "never" arm holds 9 of 9), fill rate, strength weighting |
 | Fills at phrase ends, crash on the next downbeat, musical ending; 0 misplaced over 1 327 bars | Fill gate is calibrated for offers: on my own audio 46 of 52 phrase ends were vetoed as "faltering" |
 | Deterministic replay with md5 parity; acceptance runner per brief | Control thread at 109 % of a block at p99 in Python; the plan is C++ for the two real-time tiers |
 | Round-trip latency measured by loopback: 26.08 ms, identical at 128 and 256 frames | Where the hits land in the air has not been measured (needs the loopback cable patched) |
 | Panel: notes, key, chords, input meter, reasons in words | Funk and soul in 4/4 only; the phrase is counted from the count-in, not heard |
-|  | Harmony: the listener's key and chord guesses feed the panel only; harmonic accompaniment is deferred until the drummer is right |
+| The Tube view: a fly-through pitch map, one lap per four bars, the tonic on the floor and colour by pitch relative to the chosen key; onset visible 151 ms median, named note 238 ms (file driver, n = 94) | Harmony: the listener's key and chord guesses feed the panel only; harmonic accompaniment is deferred until the drummer is right |
 
 ## Representative code
 
